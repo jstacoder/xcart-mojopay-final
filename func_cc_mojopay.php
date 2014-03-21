@@ -2,7 +2,7 @@
 $txnMode = array(
 	'auth' => 'ccAuthorize',
 	'settle' => 'ccSettlement',
-	'capture' => 'ccPurchase')
+	'capture' => 'ccPurchase');
 
 $mode = 'capture';
 
@@ -129,7 +129,7 @@ function set_data($test_data = false)
         'shippingFirstName' => substr($userinfo["s_firstname"],0,50),
         'shippingLastName' => substr($userinfo["s_lastname"],0,50),
         'shippingStreet' => substr($userinfo["s_address"],0,50),
-		'shippingStreet2' => substr($userinfo["s_address2"],0,50)
+		'shippingStreet2' => substr($userinfo["s_address2"],0,50),
         'shippingCity' => substr($userinfo["s_city"],0,50),
         'shippingRegion' => substr($userinfo["s_statename"],0,50),
         'shippingZip' => substr($userinfo["b_zipcode"],0,50),
@@ -186,14 +186,14 @@ function process_mojopay_response($response)
     'error' => $mojopay_response->detail[2]->value,
     'txnTime' => $mojopay_response->txnTime
     );
-    return $results
+    return $results;
 }
 
 function do_post_request($xml)
 {
 	$response = send_request($xml);
 	$result = process_mojopay_response($response);
-	return $result
+	return $result;
 }
 
 
