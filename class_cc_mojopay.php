@@ -1,5 +1,6 @@
 <?php
 define($use_test_data,true);
+$testing = true;
 
 class Mojopay_Payment_Gateway
 {
@@ -150,6 +151,11 @@ class Mojopay_Payment_Gateway
 
     private function _get_txn_mode()
     {
+	    if(isset($testing))
+       
+        {
+            return 'ccPurchase';
+        }
         if (isset($this->_xmlData['confirmationNumber']))
         {
             $mode = 'ccSettlement';
@@ -167,7 +173,7 @@ class Mojopay_Payment_Gateway
     public function send_request($post_string = null)
     {
 	    $test_mode = (int)$module_params['param06'];
-	    if (true) 
+	    if (true)
 	        {
 		        $gateway_url = 'https://webservices.test.mojopay.com/creditcardWS/CreditCardServlet/v1';
 	        } else {
@@ -202,12 +208,12 @@ class Mojopay_Payment_Gateway
     {
         $mojopay_response = new SimpleXMLElement($this->_postResult);
         $results = array(
-        'confirmationNumber' => $mojopay_response->confirmationNumber,
-        'result' => $mojopay_response->decision,
+        'confirmationNumber' => (string)$mojopay_response->confirmationNumber,
+        'result' => (string)$mojopay_response->decision,
         'code'=> (int)$mojopay_response->code,
-        'description' => $mojopay_response->description,
-        'error' => $mojopay_response->detail[2]->value,
-        'txnTime' => $mojopay_response->txnTime
+        'description' => (string)$mojopay_response->description,
+        'error' => (string)$mojopay_response->detail[2]->value,
+        'txnTime' => (string)$mojopay_response->txnTime
         );
         return $results;
     }
@@ -222,6 +228,10 @@ class Mojopay_Payment_Gateway
 }
 
 $mojo = new Mojopay_Payment_Gateway();
-print_r($mojo->send_request());
+$response = $mojo->send_request();
+foreach ($response as $k=>$v)
+{
+    echo "$k = $v" . PHP_EOL;
+}
 //print_r($mojo->_requestXml);
 ?>
