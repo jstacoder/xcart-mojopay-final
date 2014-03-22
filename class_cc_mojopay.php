@@ -85,7 +85,7 @@ class Mojopay_Payment_Gateway
 	    if(true)
         {
             $this->_xmlData = array(
-            'accountNum' => '9989693',
+            'accountNum' => '89989693',
             'storeID' => 'test',
             'storePwd' => 'test',
             'merchantRefNum' =>  'Ref-' . rand(),
@@ -119,7 +119,7 @@ class Mojopay_Payment_Gateway
 		    'accountNum' => $module_params['param01'],
             'storeID' => $module_params['param02'],
             'storePwd' => $module_params['param03'],
-            'merchantRefNum' =>  $txnid,
+            'merchantRefNum' =>  '77777',
             'billingFirstName' => substr($bill_firstname,0,40),
             'billingLastName' => substr($bill_lastname,0,40),
             'billingStreet' => substr($userinfo["b_address"],0,50),
@@ -233,5 +233,5 @@ foreach ($response as $k=>$v)
 {
     echo "$k = $v" . PHP_EOL;
 }
-//print_r($mojo->_requestXml);
+print_r($mojo->_requestXml);
 ?>

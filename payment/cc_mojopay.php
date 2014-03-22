@@ -4,15 +4,12 @@ if (!defined('XCART_START')) { header("Location: ../"); die("Access denied"); }
  * @author: Kyle Roux
  * @desc: processing file for mojopay payment gateway
  */
-if ($_SERVER['METHOD'] == "POST") 
+if ($_SERVER['REQUEST_METHOD'] == "POST") 
 {
     if(file_exists("./auth.php")) {
         include_once "./auth.php";
     }
     
-    if(file_exists($xcart_dir . DS . 'include' . DS . 'classes' . 'class_cc_mojopay.php')) {
-        require_once $xcart_dir . DS . 'include' . DS . 'classes' . 'class_cc_mojopay.php';
-    }
     if(!is_array($secure_oid)) {
         $oid = $secure_oid;
     } else {
@@ -20,18 +17,24 @@ if ($_SERVER['METHOD'] == "POST")
     }
 
     $module_params = func_get_pm_params('cc_mojopay.php');
-    $mojo = new Mojopay_Payment_Gateway;
-    $response = $mojo->send_request();
-    $webset = 2;    
+    $webset = 1;    
     
-    if ((string)$response->decision == 'ACCEPTED' && (int)$response->code == 0) (
+    if(file_exists($xcart_dir."/class_cc_mojopay.php")) {
+        require_once $xcart_dir."/class_cc_mojopay.php";
+    }
+    $sessid = $oid;
+    $mojo = new Mojopay_Payment_Gateway();
+    $response = $mojo->send_request();
+    if ((string)$response->decision == "ACCEPTED") {
         // transaction was processed, clear cart and give customer the invoice
         $bill_output['code'] = 1;
         $bill_output['txnid'] = (string)$response->confirmationNumber;
+        $bill_output['sessid'] = $bill_output['txnid'];
     } else {
         // transaction failed, show message and redirect back
         $bill_output['code'] = 2;
-        $bill_output['billmes'] = (string)$response->error . PHP_EOL . (string)$response->description;
+        $bill_output['billmes'] = (string)$response->description;
+        $error = 'error_ccprocessor_error';
     }
  
 
