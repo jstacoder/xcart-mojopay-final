@@ -1,0 +1,4 @@
+push.sh, pull.sh and git-ssh.sh are all wrappers to use git on my
+windows work computer.
+
+run.sh will run the test php script and dump the stderr to /dev/null

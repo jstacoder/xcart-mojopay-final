@@ -139,7 +139,7 @@ class Mojopay_Payment_Gateway
             'shippingZip' => substr($userinfo["b_zipcode"],0,50),
             'shippingCountry' => substr($userinfo["b_country"],0,50),
             'shippingEmail' => substr($userinfo["email"],0,50),
-            'amount' => substr(sprintf("%01.2f","10.0") , 0, 15),
+            'amount' => substr(sprintf("%01.2f",$cart['total_value']) , 0, 15),
             'cardNum' => $userinfo['cc_number'],
             'month' => substr($userinfo['cc_exp_month'], 0,2),
             'year' => substr($userinfo['cc_exp_year'], 0, 2),
