@@ -85,7 +85,7 @@ class Mojopay_Payment_Gateway
 	    if(true)
         {
             $this->_xmlData = array(
-            'accountNum' => '89989693',
+            'accountNum' => '9989693',
             'storeID' => 'test',
             'storePwd' => 'test',
             'merchantRefNum' =>  'Ref-' . rand(),
