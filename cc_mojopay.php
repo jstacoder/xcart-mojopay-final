@@ -1,5 +1,4 @@
 <?php
-//if (!defined('XCART_START')) { header("Location: ../"); die("Access denied"); }
 /* @name: cc_mojopay.php
  * @author: Kyle Roux
  * @desc: processing file for mojopay payment gateway
@@ -8,17 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
     if(file_exists("./auth.php")) {
         include_once "./auth.php";
-    }
-    
-    if(!is_array($secure_oid)) {
-        $oid = $secure_oid;
-    } else {
-        $oid = $secure_oid[0];
-    }
-
-    $webset = 1;    
-    
-    
+    } 
     
     class Mojopay_Payment_Gateway
     {
@@ -32,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 
         private function _build_request()
         {
+            $this->_no_cvv = false;
             $data = $this->_xmlData;
             if (!isset($data['confirmationNumber'])) // build a ccAuthRequestV1 object
                 {
@@ -53,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
                     $xml .= '</cardExpiry>';
                     $xml .= '<cvdIndicator>1</cvdIndicator>';
                     if (strlen($data['cvd']) < 3) {
-                        $data['cvd'] = '000';
+                        //$data['cvd'] = '000';
+                        $ithis->_no_cvv = true;
                     }
                     $xml .= '<cvd>' . $data['cvd'] . '</cvd>';
                     $xml .= '</card>';
@@ -246,6 +237,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
             return $results;
         }
 
+        public function good_cvv()
+        {
+            return $this->_no_cvv;
+        }
+
         function do_post_request($xml)
         {
             $response = send_request($xml);
@@ -256,7 +252,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
     }
     
     
+    if(!is_array($secure_oid)) {
+        $oid = $secure_oid;
+    } else {
+        $oid = $secure_oid[0];
+    }
+
+    $webset = 1;    
+
+    // create connection to mojopay
     $mojo = new Mojopay_Payment_Gateway;
+    // rend cc payment request and recieve result
     $response = $mojo->send_request();
     if ((string)$response->decision == "ACCEPTED") {
         // transaction was processed, clear cart and give customer the invoice
@@ -266,13 +272,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
     } else {
         // transaction failed, show message and redirect back
         $bill_output['code'] = 2;
-        $bill_output['billmes'] =  (string)$response->description;
-        $error = 'error_ccprocessor_error';
+        if((int)$response->code == 5023) {
+            $bill_output['billmes'] = "You either entered an incorrect cvv or you did not enter enough digits, please check your information and try again.";
+            $error = 'error_ccprocessing_baddata';
+        } else {
+            $bill_output['billmes'] =  (string)$response->description;
+            $error = 'error_ccprocessor_error';
+        }
+    
     }
- 
-
   include_once $xcart_dir."/payment/payment_ccend.php";
-  die($mojo->_requestXml);
   if(!$duplicate) {
     db_query("REPLACE INTO $sql_tbl[cc_pp3_data] (ref,sessid) VALUES ('".addslashes($oid)."','".$XCARTSESSID."')");
   } 

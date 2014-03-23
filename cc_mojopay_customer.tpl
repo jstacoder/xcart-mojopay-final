@@ -102,8 +102,9 @@
 </tr>
 <tr>
   <td><label for="cc_expire_date">{$lng.lbl_cc_mojopay_expire_date}</label></td>
+  <td class="data-required">*</td>
   <td>
-    <select name="cc_expire_date_month">
+    <select  id="exp_month" name="cc_expire_date_month">
       <option value="01">January</option>
       <option value="02">February</option>
       <option value="03">March</option>
@@ -116,10 +117,11 @@
       <option value="10">October</option>
       <option value="11">November</option>
       <option value="12">December</option>
-    </select>
-    /
+    </select></td>
+  
+    <td>
     {assign var=cc_current_year value=$smarty.now|date_format:"%Y"}
-    <select name="cc_expire_date_year">
+    <select style="margin-left: -125px;" name="cc_expire_date_year">
 {section name=cc_year start=$cc_current_year loop=$cc_current_year+10 step=1}
 <option value="{$smarty.section.cc_year.index}">{$smarty.section.cc_year.index}</option>
 {/section}
